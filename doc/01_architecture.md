@@ -14,21 +14,21 @@ flowchart TD
     end
     
     subgraph LoadingLayer["데이터 로딩 레이어"]
-        C[JsonLogLoader<br/>- JSON 파싱<br/>- 좌표 변환<br/>- 객체 변환]
-        D[MapManager<br/>- 맵 로딩<br/>- 인덱싱<br/>- 쿼리 API]
+        C["JsonLogLoader: JSON 파싱, 좌표 변환, 객체 변환"]
+        D["MapManager: 맵 로딩, 인덱싱, 쿼리 API"]
     end
     
     subgraph WindowLayer["윈도우 추출 레이어"]
-        E[ScenarioWindow Extraction<br/>- 101-epoch 윈도우 생성<br/>- 과거 40 + 현재 1 + 미래 60<br/>- 샘플링 step_size]
+        E["ScenarioWindow Extraction: 101-epoch 윈도우 생성, 과거 40 + 현재 1 + 미래 60, 샘플링 step_size"]
     end
     
     subgraph ClassificationLayer["분류 레이어"]
-        F[ScenarioLabeler<br/>1. State-based Classification<br/>2. Behavior-based Classification<br/>3. Interaction-based Classification<br/>4. Dynamics-based Classification]
+        F["ScenarioLabeler: State-based, Behavior-based, Interaction-based, Dynamics-based Classification"]
     end
     
     subgraph OutputLayer["출력 레이어"]
-        G[ScenarioExporter<br/>- JSON 출력<br/>- 메타데이터]
-        H[CustomScenario Visualizer<br/>- 이미지 생성<br/>- 시각화]
+        G["ScenarioExporter: JSON 출력, 메타데이터"]
+        H["CustomScenario Visualizer: 이미지 생성, 시각화"]
     end
     
     A --> C
@@ -129,7 +129,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[MapManager 초기화] --> B[SQLite 파일 로딩]
-    B --> C[모든 레이어 초기화<br/>initialize_all_layers]
+    B --> C["모든 레이어 초기화: initialize_all_layers"]
     C --> D[STRtree 인덱스 구축]
     
     E[JsonLogLoader 초기화] --> F[맵 원점 좌표 설정]
@@ -143,25 +143,25 @@ flowchart TD
     A[JSON 파일 로딩] --> B[JsonLogLoader.load]
     B --> C[JsonLogLoader.get_parsed_entries]
     C --> D[각 엔트리 파싱]
-    D --> E[parse_ego_state<br/>→ EgoState]
-    D --> F[parse_dynamic_agent<br/>→ TrackedObject]
-    D --> G[parse_traffic_light<br/>→ TrafficLightStatusData]
-    E --> H[get_ego_states<br/>→ List[EgoState]]
-    F --> I[get_dynamic_agents<br/>→ List[List[TrackedObject]]]
+    D --> E["parse_ego_state -> EgoState"]
+    D --> F["parse_dynamic_agent -> TrackedObject"]
+    D --> G["parse_traffic_light -> TrafficLightStatusData"]
+    E --> H["get_ego_states -> List[EgoState]"]
+    F --> I["get_dynamic_agents -> List[List[TrackedObject]]"]
 ```
 
 ### 3. 윈도우 추출 단계
 
 ```mermaid
 flowchart TD
-    A[center_idx 반복] --> B[윈도우 범위 계산<br/>window_start = center_idx - 40<br/>window_end = center_idx + 60 + 1]
+    A[center_idx 반복] --> B["윈도우 범위 계산: window_start = center_idx - 40, window_end = center_idx + 60 + 1"]
     B --> C[ScenarioWindow 생성]
-    C --> D[ego_history:<br/>window_start:center_idx]
-    C --> E[ego_current:<br/>center_idx]
-    C --> F[ego_future:<br/>center_idx+1:window_end]
-    C --> G[agents_history:<br/>window_start:center_idx]
-    C --> H[agents_current:<br/>center_idx]
-    C --> I[agents_future:<br/>center_idx+1:window_end]
+    C --> D["ego_history: window_start:center_idx"]
+    C --> E["ego_current: center_idx"]
+    C --> F["ego_future: center_idx+1:window_end"]
+    C --> G["agents_history: window_start:center_idx"]
+    C --> H["agents_current: center_idx"]
+    C --> I["agents_future: center_idx+1:window_end"]
 ```
 
 ### 4. 분류 단계
@@ -169,11 +169,11 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[window 반복] --> B[ScenarioLabeler.classify]
-    B --> C[_classify_explicit_states<br/>→ Set[str]]
-    B --> D[_classify_behaviors<br/>→ Set[str]]
-    B --> E[_classify_interactions<br/>→ Set[str]]
-    B --> F[_classify_dynamics<br/>→ Set[str]]
-    C --> G[라벨 객체 생성<br/>ScenarioLabel]
+    B --> C["_classify_explicit_states -> Set[str]"]
+    B --> D["_classify_behaviors -> Set[str]"]
+    B --> E["_classify_interactions -> Set[str]"]
+    B --> F["_classify_dynamics -> Set[str]"]
+    C --> G["라벨 객체 생성: ScenarioLabel"]
     D --> G
     E --> G
     F --> G
@@ -207,7 +207,7 @@ graph TD
     JsonLogLoader --> TrafficLightDataTypes[TrafficLightDataTypes]
     JsonLogLoader --> MapManager
     
-    MapManager --> Shapely[Shapely<br/>기하 연산]
+    MapManager --> Shapely["Shapely: 기하 연산"]
     MapManager --> SQLite3[SQLite3]
     
     ScenarioLabeler --> DataTypes1[DataTypes.ScenarioWindow]
@@ -238,17 +238,17 @@ graph TD
 flowchart LR
     subgraph History["과거 (History)"]
         H1[i-40] --> H2[i-39] --> H3[...] --> H4[i-1]
-        H5["40 프레임<br/>2초 (20Hz)"]
+        H5["40 프레임: 2초 (20Hz)"]
     end
     
     subgraph Current["현재 (Current)"]
         C1[i]
-        C2["1 프레임<br/>0.05초"]
+        C2["1 프레임: 0.05초"]
     end
     
     subgraph Future["미래 (Future)"]
         F1[i+1] --> F2[i+2] --> F3[...] --> F4[i+60]
-        F5["60 프레임<br/>3초 (20Hz)"]
+        F5["60 프레임: 3초 (20Hz)"]
     end
     
     H4 --> C1
@@ -277,17 +277,17 @@ graph TD
     A --> E[Agents 데이터]
     A --> F[기타 정보]
     
-    D --> D1[ego_history<br/>List[EgoState]<br/>40 프레임]
-    D --> D2[ego_current<br/>EgoState<br/>1 프레임]
-    D --> D3[ego_future<br/>List[EgoState]<br/>60 프레임]
+    D --> D1["ego_history: List[EgoState], 40 프레임"]
+    D --> D2["ego_current: EgoState, 1 프레임"]
+    D --> D3["ego_future: List[EgoState], 60 프레임"]
     
-    E --> E1[agents_history<br/>List[List[TrackedObject]]<br/>40 프레임]
-    E --> E2[agents_current<br/>List[TrackedObject]<br/>1 프레임]
-    E --> E3[agents_future<br/>List[List[TrackedObject]]<br/>60 프레임]
+    E --> E1["agents_history: List[List[TrackedObject]], 40 프레임"]
+    E --> E2["agents_current: List[TrackedObject], 1 프레임"]
+    E --> E3["agents_future: List[List[TrackedObject]], 60 프레임"]
     
-    F --> F1[traffic_light_status<br/>TrafficLightStatusData]
-    F --> F2[map_context<br/>Dict]
-    F --> F3[labels<br/>List[ScenarioLabel]]
+    F --> F1["traffic_light_status: TrafficLightStatusData"]
+    F --> F2["map_context: Dict"]
+    F --> F3["labels: List[ScenarioLabel]"]
 ```
 
 ### 윈도우 선택 기준

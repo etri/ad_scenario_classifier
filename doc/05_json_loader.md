@@ -360,17 +360,17 @@ flowchart TD
     F --> H[parse_dynamic_agent]
     F --> I[parse_traffic_light]
     
-    G --> G1[로컬 좌표 → UTM 좌표]
-    G1 --> G2[ENU 헤딩 → 유클리드 헤딩]
+    G --> G1["로컬 좌표 -> UTM 좌표"]
+    G1 --> G2["ENU 헤딩 -> 유클리드 헤딩"]
     G2 --> G3[EgoState 객체 생성]
     
-    H --> H1[로컬 좌표 → UTM 좌표]
+    H --> H1["로컬 좌표 -> UTM 좌표"]
     H1 --> H2[카테고리 매핑]
     H2 --> H3{Agent 타입?}
-    H3 -->|예| H4[Agent 객체 생성<br/>속도 포함]
+    H3 -->|예| H4["Agent 객체 생성: 속도 포함"]
     H3 -->|아니오| H5[StaticObject 객체 생성]
     
-    I --> I1[맵 쿼리<br/>get_nearest_lane]
+    I --> I1["맵 쿼리: get_nearest_lane"]
     I1 --> I2[신호등 상태 파싱]
     I2 --> I3[TrafficLightStatusData 생성]
     
@@ -379,9 +379,9 @@ flowchart TD
     H5 --> J
     I3 --> J
     
-    J --> K[List[LogEntry]]
-    K --> L[get_ego_states<br/>→ List[EgoState]]
-    K --> M[get_dynamic_agents<br/>→ List[List[TrackedObject]]]
+    J --> K["LogEntry 리스트"]
+    K --> L["get_ego_states -> List[EgoState]"]
+    K --> M["get_dynamic_agents -> List[List[TrackedObject]]"]
 ```
 
 ### get_parsed_entries

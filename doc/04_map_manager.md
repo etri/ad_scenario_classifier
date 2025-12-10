@@ -243,7 +243,7 @@ flowchart TD
     C7 --> D
     C8 --> D
     
-    D --> E[_wire_graphs<br/>차선 후속/선행 관계 연결]
+    D --> E["_wire_graphs: 차선 후속/선행 관계 연결"]
     E --> F[STRtree 인덱스 구축]
     F --> F1[차선 인덱스]
     F --> F2[차선 연결부 인덱스]

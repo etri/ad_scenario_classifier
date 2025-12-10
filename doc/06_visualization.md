@@ -108,11 +108,11 @@ self.agent_colors = {
 flowchart TD
     A[ScenarioWindow 입력] --> B[CustomScenarioVisualizer.visualize]
     B --> C[Ego 중심 좌표계 설정]
-    C --> C1[원점 설정<br/>ego.rear_axle]
+    C --> C1["원점 설정: ego.rear_axle"]
     C1 --> C2[회전 행렬 생성]
     
     C2 --> D[맵 렌더링]
-    D --> D1[근접 차선 검색<br/>get_proximal_map_objects]
+    D --> D1["근접 차선 검색: get_proximal_map_objects"]
     D1 --> D2[차선 폴리곤 렌더링]
     D1 --> D3[차선 중심선 렌더링]
     D1 --> D4[횡단보도 렌더링]
@@ -121,8 +121,8 @@ flowchart TD
     D3 --> E
     D4 --> E
     
-    E --> E1[Ego 과거 궤적<br/>실선]
-    E --> E2[Ego 미래 궤적<br/>점선]
+    E --> E1["Ego 과거 궤적: 실선"]
+    E --> E2["Ego 미래 궤적: 점선"]
     E --> E3[에이전트 과거 궤적]
     E --> E4[에이전트 미래 궤적]
     
@@ -143,7 +143,7 @@ flowchart TD
     H1 --> H2[텍스트 오버레이]
     
     H2 --> I[이미지 생성]
-    I --> I1[Matplotlib Figure → NumPy Array]
+    I --> I1["Matplotlib Figure -> NumPy Array"]
     I1 --> I2[PNG 파일 저장]
 ```
 
@@ -151,11 +151,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[월드 좌표계<br/>UTM] --> B[평행이동<br/>-ego.origin]
-    B --> C[회전 변환<br/>-ego.heading]
-    C --> D[Ego 중심 좌표계<br/>ego at 0,0<br/>heading = 0°]
+    A["월드 좌표계: UTM"] --> B["평행이동: -ego.origin"]
+    B --> C["회전 변환: -ego.heading"]
+    C --> D["Ego 중심 좌표계: ego at 0,0, heading = 0°"]
     
-    E[맵 요소<br/>차선, 횡단보도] --> F[_transform_coordinates]
+    E["맵 요소: 차선, 횡단보도"] --> F[_transform_coordinates]
     G[Ego 차량] --> H[원점 0,0]
     I[주변 객체] --> F
     J[궤적 포인트] --> F

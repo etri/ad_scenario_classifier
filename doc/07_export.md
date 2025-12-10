@@ -51,9 +51,9 @@ flowchart TD
     E --> E4[confidence_mean]
     E --> E5[categories]
     
-    F --> F1[ego_history<br/>40 프레임]
-    F --> F2[ego_current<br/>1 프레임]
-    F --> F3[ego_future<br/>60 프레임]
+    F --> F1["ego_history: 40 프레임"]
+    F --> F2["ego_current: 1 프레임"]
+    F --> F3["ego_future: 60 프레임"]
     F --> F4[agents_history]
     F --> F5[agents_current]
     F --> F6[agents_future]
@@ -89,12 +89,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[List[ScenarioWindow]] --> B[ScenarioExporter.export_batch]
+    A["ScenarioWindow 리스트"] --> B[ScenarioExporter.export_batch]
     B --> C[출력 디렉토리 생성]
     C --> D[각 윈도우 반복]
     D --> E[export_scenario]
     E --> F[scenario_XXXXXX.json 생성]
-    F --> G{모든 윈도우<br/>처리 완료?}
+    F --> G{모든 윈도우 처리 완료?}
     G -->|아니오| D
     G -->|예| H[요약 파일 생성]
     H --> H1[scenarios_summary.json]

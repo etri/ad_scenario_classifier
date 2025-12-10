@@ -26,10 +26,7 @@ classDiagram
         +str category
         +str description
     }
-    
-    ScenarioLabel --> "label: low_magnitude_speed"
-    ScenarioLabel --> "confidence: 0.0~1.0"
-    ScenarioLabel --> "category: speed_profile"
+    note for ScenarioLabel "label: low_magnitude_speed\nconfidence: 0.0~1.0\ncategory: speed_profile"
 ```
 
 ### 정의
@@ -77,55 +74,6 @@ label = ScenarioLabel(
 ## ScenarioWindow
 
 101-epoch 시나리오 윈도우를 나타내는 핵심 데이터 구조입니다. 과거, 현재, 미래의 ego 상태와 주변 객체 정보를 포함합니다.
-
-### 데이터 구조 관계
-
-```mermaid
-classDiagram
-    class ScenarioWindow {
-        +int center_idx
-        +int center_timestamp
-        +List~EgoState~ ego_history
-        +EgoState ego_current
-        +List~EgoState~ ego_future
-        +List~List~TrackedObject~~ agents_history
-        +List~TrackedObject~ agents_current
-        +List~List~TrackedObject~~ agents_future
-        +TrafficLightStatusData traffic_light_status
-        +Dict map_context
-        +List~ScenarioLabel~ labels
-    }
-    
-    class EgoState {
-        +StateSE2 rear_axle
-        +StateVector2D rear_axle_velocity_2d
-        +StateVector2D rear_axle_acceleration_2d
-        +Polygon car_footprint
-        +int timestamp_us
-    }
-    
-    class TrackedObject {
-        +TrackedObjectType tracked_object_type
-        +StateSE2 center
-        +OrientedBox box
-        +StateVector2D velocity
-        +str track_token
-    }
-    
-    class ScenarioLabel {
-        +str label
-        +float confidence
-        +str category
-    }
-    
-    ScenarioWindow "40" --> EgoState : ego_history
-    ScenarioWindow "1" --> EgoState : ego_current
-    ScenarioWindow "60" --> EgoState : ego_future
-    ScenarioWindow "40" --> "List~TrackedObject~" : agents_history
-    ScenarioWindow "1" --> TrackedObject : agents_current
-    ScenarioWindow "60" --> "List~TrackedObject~" : agents_future
-    ScenarioWindow "*" --> ScenarioLabel : labels
-```
 
 ### 정의
 
@@ -453,9 +401,9 @@ class TrafficLightStatusType(IntEnum):
 ```mermaid
 flowchart TD
     A[JSON 로그 파일] --> B[JsonLogLoader.parse_log_entry]
-    B --> C[parse_ego_state<br/>→ EgoState]
-    B --> D[parse_dynamic_agent<br/>→ TrackedObject]
-    B --> E[parse_traffic_light<br/>→ TrafficLightStatusData]
+    B --> C["parse_ego_state -> EgoState"]
+    B --> D["parse_dynamic_agent -> TrackedObject"]
+    B --> E["parse_traffic_light -> TrafficLightStatusData"]
     C --> F[LogEntry]
     D --> F
     E --> F
@@ -465,13 +413,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[List[LogEntry]] --> B[윈도우 추출]
-    B --> C[ego_history:<br/>List[EgoState]]
-    B --> D[ego_current:<br/>EgoState]
-    B --> E[ego_future:<br/>List[EgoState]]
-    B --> F[agents_history:<br/>List[List[TrackedObject]]]
-    B --> G[agents_current:<br/>List[TrackedObject]]
-    B --> H[agents_future:<br/>List[List[TrackedObject]]]
+    A["LogEntry 리스트"] --> B[윈도우 추출]
+    B --> C["ego_history: List[EgoState]"]
+    B --> D["ego_current: EgoState"]
+    B --> E["ego_future: List[EgoState]"]
+    B --> F["agents_history: List[List[TrackedObject]]"]
+    B --> G["agents_current: List[TrackedObject]"]
+    B --> H["agents_future: List[List[TrackedObject]]"]
     C --> I[ScenarioWindow]
     D --> I
     E --> I
@@ -488,8 +436,8 @@ flowchart TD
     B --> C[메타데이터 추출]
     B --> D[라벨 정보 추출]
     B --> E[통계 정보 계산]
-    B --> F[observation_data 생성<br/>101-epoch 전체 데이터]
-    C --> G[LabeledScenario<br/>JSON 출력용]
+    B --> F["observation_data 생성: 101-epoch 전체 데이터"]
+    C --> G["LabeledScenario / JSON 출력용"]
     D --> G
     E --> G
     F --> G
