@@ -13,6 +13,43 @@
 
 각 단계는 독립적으로 실행되며, 최종적으로 모든 라벨이 통합되어 시나리오에 할당됩니다.
 
+### 4단계 분류 파이프라인
+
+```mermaid
+flowchart TD
+    A[ScenarioWindow 입력] --> B[ScenarioLabeler.classify]
+    B --> C[1. State-based Classification]
+    B --> D[2. Behavior-based Classification]
+    B --> E[3. Interaction-based Classification]
+    B --> F[4. Dynamics-based Classification]
+    
+    C --> C1[속도 프로파일 분류]
+    C --> C2[정지 상태 감지]
+    C --> C3[근접 객체 분류]
+    C1 --> G[라벨 집합]
+    C2 --> G
+    C3 --> G
+    
+    D --> D1[회전 감지]
+    D --> D2[차선변경 감지]
+    D1 --> G
+    D2 --> G
+    
+    E --> E1[선행차 추종]
+    E --> E2[다중 객체 판단]
+    E1 --> G
+    E2 --> G
+    
+    F --> F1[Jerk 계산]
+    F --> F2[측면 가속도 계산]
+    F1 --> G
+    F2 --> G
+    
+    G --> H[ScenarioLabel 객체 생성]
+    H --> I[window.labels 업데이트]
+    I --> J[라벨링 완료]
+```
+
 ## 클래스 구조
 
 ```python
@@ -403,6 +440,52 @@ if len(window.ego_history) >= 1:
 - 분석 구간: 최근 2 프레임 (0.1초, 20Hz 기준)
 
 **신뢰도**: 0.95
+
+## 라벨 카테고리 구조
+
+```mermaid
+graph TD
+    A[ScenarioLabel] --> B[speed_profile]
+    A --> C[stationary]
+    A --> D[turning]
+    A --> E[lane_change]
+    A --> F[following]
+    A --> G[proximity]
+    A --> H[dynamics]
+    
+    B --> B1[low_magnitude_speed]
+    B --> B2[medium_magnitude_speed]
+    B --> B3[high_magnitude_speed]
+    
+    C --> C1[stationary]
+    C --> C2[stationary_in_traffic]
+    
+    D --> D1[starting_left_turn]
+    D --> D2[starting_right_turn]
+    D --> D3[starting_high_speed_turn]
+    D --> D4[starting_low_speed_turn]
+    
+    E --> E1[changing_lane]
+    E --> E2[changing_lane_to_left]
+    E --> E3[changing_lane_to_right]
+    
+    F --> F1[following_lane_with_lead]
+    F --> F2[following_lane_with_slow_lead]
+    F --> F3[following_lane_without_lead]
+    
+    G --> G1[near_high_speed_vehicle]
+    G --> G2[near_long_vehicle]
+    G --> G3[near_multiple_vehicles]
+    G --> G4[near_construction_zone_sign]
+    G --> G5[near_trafficcone_on_driveable]
+    G --> G6[near_barrier_on_driveable]
+    G --> G7[behind_long_vehicle]
+    G --> G8[behind_bike]
+    G --> G9[near_multiple_pedestrians]
+    
+    H --> H1[high_magnitude_jerk]
+    H --> H2[high_lateral_acceleration]
+```
 
 ## 라벨 통합 및 신뢰도 할당
 
