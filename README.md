@@ -1,49 +1,44 @@
-# AD Scenario Classifier
+# 시나리오 분류기 (Scenario Classifier)
 
-실제 자율주행 로그 데이터를 위한 자동화된 시나리오 분류 파이프라인
+이 프로젝트는 NuPlan 프레임워크 및 실제 자율주행 로그 데이터를 위한 자동화된 주행 시나리오 분류 및 라벨링 파이프라인입니다. JSON 형식 로그를 입력받아 다양한 주행 상황(차선변경, 정지, 회전 등)을 규칙 기반 다단계 파이프라인으로 분류하고, 시각화 및 결과 데이터를 제공합니다.
 
 ## 📋 개요
 
-이 프로젝트는 실제 자율주행 차량에서 수집된 로그 데이터를 분석하여 다양한 주행 시나리오를 자동으로 분류하는 파이프라인을 제공합니다. 머신러닝 및 딥러닝 기법을 활용하여 주행 데이터의 패턴을 학습하고 시나리오를 분류합니다.
+- 자율주행 로그 데이터의 다양한 주행 시나리오를 자동으로 식별 및 분류
+- 대용량 로그를 확장성 있게 처리하고 다양한 시나리오로의 확장 용이
+- NuPlan 데이터 구조를 기반으로 SQLite 맵 정보를 활용한 정확한 공간 분석 지원
+- 시나리오 라벨링 결과와 데이터를 시각화 이미지로 출력
+- Rule-based 4단계 분류 (상태, 행동, 상호작용, 동역학 기반)
 
-## ✨ 주요 기능
+## 주요 기능
 
-- **자동 시나리오 분류**: 자율주행 로그 데이터에서 다양한 주행 시나리오를 자동으로 식별 및 분류
-- **실시간 처리**: 대용량 로그 데이터를 효율적으로 처리
-- **확장 가능한 아키텍처**: 새로운 시나리오 유형 추가 및 모델 개선 용이
-- **시각화**: 분류 결과 및 데이터 분석 결과 시각화
+- **자동 시나리오 분류**: 101-epoch (과거 40 + 현재 1 + 미래 60) 윈도우 기반 주행 구간 단위 분류
+- **맵 기반 정밀 분석**: 차선, 정지선, 교차로, 신호 등 공간 요소 자동 인식
+- **신뢰도 기반 라벨링**: 각 라벨별 신뢰도(0.0~1.0) 산출
+- **Ego 중심 시각화**: 각 시나리오 별 60x60m 이내 객체/궤적/라벨 이미지 생성
 
-## 🔧 요구사항
+## 설치 및 요구사항
 
-- Python 3.8 이상
-- (추가 요구사항은 프로젝트 진행에 따라 업데이트 예정)
-
-## 📦 설치
+- Python 3.8 이상 필요
+- 추가 파이썬 패키지 및 의존성은 `requirements.txt` 참고
 
 ```bash
-# 저장소 클론
 git clone https://github.com/yourusername/ad_scenario_classifier.git
 cd ad_scenario_classifier
-
-# 가상환경 생성 (권장)
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 의존성 설치
+source venv/bin/activate  # Windows는 venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## 🚀 사용 방법
+## 사용 예시
 
 ```bash
-# 기본 실행 예시
 python main.py --input <로그_파일_경로> --output <결과_저장_경로>
-
-# 추가 옵션
+# 옵션 예시:
 python main.py --input data/logs/ --output results/ --model <모델_경로>
 ```
 
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```
 ad_scenario_classifier/
@@ -61,56 +56,79 @@ ad_scenario_classifier/
 └── tests/
 ```
 
-(프로젝트 구조는 실제 구현에 따라 업데이트 예정)
+## 📚 기술 문서 안내
 
-## 📊 데이터 형식
+자세한 구조 및 구현 설명은 `doc/` 디렉토리 참고
 
-입력 데이터 형식 및 출력 형식에 대한 설명은 프로젝트 진행에 따라 추가 예정입니다.
+1. **[01_architecture.md](doc/01_architecture.md)**: 전체 시스템 데이터 흐름과 컴포넌트(예: JsonLogLoader, MapManager, ScenarioWindow Extraction 등) 구조
+2. **[02_data_structures.md](doc/02_data_structures.md)**: ScenarioLabel, ScenarioWindow 등 핵심 데이터 타입 정의
+3. **[03_scenario_labeler.md](doc/03_scenario_labeler.md)**: 4단계 Rule-based 분류 알고리즘 설명
+4. **[04_map_manager.md](doc/04_map_manager.md)**: SQLite 기반 맵 데이터 접근, STRtree 공간 인덱싱 및 쿼리
+5. **[05_json_loader.md](doc/05_json_loader.md)**: 로그 파일 NuPlan 구조 파싱 및 변환법
+6. **[06_visualization.md](doc/06_visualization.md)**: Ego 좌표계 시각화, 궤적/레이어 렌더링 방법
+7. **[07_export.md](doc/07_export.md)**: 라벨링 결과 JSON 구조와 출력 방식
+8. **[08_pipeline.md](doc/08_pipeline.md)**: 전체 처리 흐름 및 최적화 제안
 
-## 📚 문서
+### 분류 라벨 예시
 
-프로젝트의 상세한 기술 문서는 [`doc/`](doc/) 디렉토리에서 확인할 수 있습니다. 각 문서는 시스템의 특정 컴포넌트나 기능에 대한 심층적인 설명을 제공합니다.
+- 속도: `low_magnitude_speed`, `medium_magnitude_speed`, `high_magnitude_speed`
+- 상태: `stationary`, `stationary_in_traffic`
+- 회전: `starting_left_turn`, `starting_right_turn`, `starting_high_speed_turn`, `starting_low_speed_turn`
+- 차선변경: `changing_lane`, `changing_lane_to_left`, `changing_lane_to_right`
+- 추종: `following_lane_with_lead`, `following_lane_with_slow_lead`, `following_lane_without_lead`
+- 근접/상호작용: `near_high_speed_vehicle`, `near_long_vehicle`, `near_multiple_vehicles`, `near_construction_zone_sign`, `near_trafficcone_on_driveable`, `near_barrier_on_driveable`, `behind_long_vehicle`, `behind_bike`, `near_multiple_pedestrians`
+- 동역학: `high_magnitude_jerk`, `high_lateral_acceleration`
+- 맵 기반: `on_stopline_traffic_light`, `on_stopline_stop_sign`, `on_stopline_crosswalk`, `on_intersection`, `on_traffic_light_intersection`, `on_all_way_stop_intersection`
 
-### 시스템 아키텍처
-- **[01_architecture.md](doc/01_architecture.md)**: 전체 시스템 구조와 데이터 흐름을 설명합니다. 6개의 핵심 컴포넌트(JsonLogLoader, MapManager, ScenarioWindow Extraction, ScenarioLabeler, ScenarioExporter, CustomScenarioVisualizer)와 101-epoch 윈도우 개념을 다룹니다.
+## 시스템 아키텍처 요약
 
-### 데이터 구조
-- **[02_data_structures.md](doc/02_data_structures.md)**: 시스템에서 사용되는 핵심 데이터 구조를 상세히 설명합니다. ScenarioLabel, ScenarioWindow, LabeledScenario, LogEntry, TrafficLightStatusData 등의 구조와 사용 예시를 포함합니다.
+- **입력**: JSON 로그 파일
+- **처리**: Log Loader → MapManager → ScenarioWindow Extraction → ScenarioLabeler(4단계 분류) → ScenarioExporter/Visualizer
+- **출력**: 라벨링된 JSON, 시각화 PNG
 
-### 시나리오 분류기
-- **[03_scenario_labeler.md](doc/03_scenario_labeler.md)**: Rule-based 4단계 분류 파이프라인을 설명합니다. State-based, Behavior-based, Interaction-based, Dynamics-based 분류 방법과 각 라벨의 임계값, 신뢰도 레벨을 다룹니다.
+## 데이터 구조
 
-### 맵 관리자
-- **[04_map_manager.md](doc/04_map_manager.md)**: SQLite 기반 맵 데이터베이스 관리 시스템을 설명합니다. STRtree 기반 공간 인덱싱, 다양한 맵 레이어 지원, 공간 쿼리 API 사용법을 포함합니다.
+- **ScenarioWindow**: 101-epoch 단위 시나리오 묶음
+- **ScenarioLabel**: 라벨/신뢰도/카테고리 묶음
+- **LabeledScenario**: 결과 JSON용 시나리오
+- **LogEntry**: 단일 타임스탬프의 원시 정보
 
-### JSON 로그 로더
-- **[05_json_loader.md](doc/05_json_loader.md)**: JSON 형식의 자율주행 로그 파일을 NuPlan 프레임워크 데이터 구조로 변환하는 과정을 설명합니다. 좌표계 변환, EgoState 및 TrackedObject 파싱 방법을 다룹니다.
+## 처리 파이프라인
 
-### 시각화 시스템
-- **[06_visualization.md](doc/06_visualization.md)**: 라벨링된 시나리오를 시각화하여 PNG 이미지로 저장하는 시스템을 설명합니다. Ego 중심 좌표계 변환, 맵 요소 및 궤적 렌더링 방법을 포함합니다.
+1. 로그 파일 로딩 및 파싱
+2. 맵 데이터베이스 초기화
+3. 101-epoch 시나리오 윈도우 생성
+4. Rule-based 4단계 분류 실행
+5. 라벨링 결과 JSON 저장
+6. 시각화 이미지 생성
 
-### 데이터 출력
-- **[07_export.md](doc/07_export.md)**: 라벨링된 시나리오를 JSON 형식으로 출력하는 방법을 설명합니다. JSON 출력 형식, 101-epoch 전체 관측 데이터 구조, 요약 파일 생성 방법을 다룹니다.
+## 설정
 
-### 처리 파이프라인
-- **[08_pipeline.md](doc/08_pipeline.md)**: 전체 처리 파이프라인의 단계별 상세 설명을 제공합니다. 초기화부터 로그 로딩, 윈도우 추출, 분류, 출력, 시각화까지의 전체 흐름과 성능 최적화 방법을 포함합니다.
+주요 파라미터는 `src/DefaultParams.py`에서 관리됩니다.
+- 로그 파일/맵 파일 경로, 출력 디렉토리, 처리 옵션 등
 
-## 🤝 기여 방법
+## 참고 자료
 
-1. 이 저장소를 포크합니다
-2. 새로운 기능 브랜치를 생성합니다 (`git checkout -b feature/AmazingFeature`)
-3. 변경사항을 커밋합니다 (`git commit -m 'Add some AmazingFeature'`)
-4. 브랜치에 푸시합니다 (`git push origin feature/AmazingFeature`)
-5. Pull Request를 생성합니다
+- [NuPlan 프레임워크](https://github.com/motional/nuplan-devkit)
+- [Shapely](https://shapely.readthedocs.io/)
+- [Matplotlib](https://matplotlib.org/)
 
 ## 📝 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일 참고.
+
+## 🤝 기여 방법
+
+1. 저장소를 포크합니다
+2. 새 기능 브랜치 생성 (`git checkout -b feature/AmazingFeature`)
+3. 변경사항 커밋 (`git commit -m 'Add some AmazingFeature'`)
+4. 브랜치에 푸시 (`git push origin feature/AmazingFeature`)
+5. Pull Request 생성
 
 ## 📧 문의
 
-프로젝트에 대한 질문이나 제안사항이 있으시면 이슈를 생성해주세요.
+이슈를 통해 질문이나 제안사항을 남겨주세요.
 
 ---
 
-**참고**: 이 프로젝트는 현재 개발 중입니다. 문서 및 기능은 지속적으로 업데이트될 예정입니다.
+**참고**: 프로젝트와 문서는 계속 업데이트될 예정입니다.
