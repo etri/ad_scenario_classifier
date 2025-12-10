@@ -16,6 +16,22 @@
 
 시나리오에 할당된 단일 라벨을 나타내는 데이터 클래스입니다.
 
+### 데이터 구조
+
+```mermaid
+classDiagram
+    class ScenarioLabel {
+        +str label
+        +float confidence
+        +str category
+        +str description
+    }
+    
+    ScenarioLabel --> "label: low_magnitude_speed"
+    ScenarioLabel --> "confidence: 0.0~1.0"
+    ScenarioLabel --> "category: speed_profile"
+```
+
 ### 정의
 
 ```python
@@ -61,6 +77,55 @@ label = ScenarioLabel(
 ## ScenarioWindow
 
 101-epoch 시나리오 윈도우를 나타내는 핵심 데이터 구조입니다. 과거, 현재, 미래의 ego 상태와 주변 객체 정보를 포함합니다.
+
+### 데이터 구조 관계
+
+```mermaid
+classDiagram
+    class ScenarioWindow {
+        +int center_idx
+        +int center_timestamp
+        +List~EgoState~ ego_history
+        +EgoState ego_current
+        +List~EgoState~ ego_future
+        +List~List~TrackedObject~~ agents_history
+        +List~TrackedObject~ agents_current
+        +List~List~TrackedObject~~ agents_future
+        +TrafficLightStatusData traffic_light_status
+        +Dict map_context
+        +List~ScenarioLabel~ labels
+    }
+    
+    class EgoState {
+        +StateSE2 rear_axle
+        +StateVector2D rear_axle_velocity_2d
+        +StateVector2D rear_axle_acceleration_2d
+        +Polygon car_footprint
+        +int timestamp_us
+    }
+    
+    class TrackedObject {
+        +TrackedObjectType tracked_object_type
+        +StateSE2 center
+        +OrientedBox box
+        +StateVector2D velocity
+        +str track_token
+    }
+    
+    class ScenarioLabel {
+        +str label
+        +float confidence
+        +str category
+    }
+    
+    ScenarioWindow "40" --> EgoState : ego_history
+    ScenarioWindow "1" --> EgoState : ego_current
+    ScenarioWindow "60" --> EgoState : ego_future
+    ScenarioWindow "40" --> "List~TrackedObject~" : agents_history
+    ScenarioWindow "1" --> TrackedObject : agents_current
+    ScenarioWindow "60" --> "List~TrackedObject~" : agents_future
+    ScenarioWindow "*" --> ScenarioLabel : labels
+```
 
 ### 정의
 
@@ -213,6 +278,34 @@ labeler.classify(window)
 ## LabeledScenario
 
 라벨링이 완료된 시나리오를 JSON으로 출력하기 위한 데이터 구조입니다.
+
+### 데이터 구조
+
+```mermaid
+classDiagram
+    class LabeledScenario {
+        +str scenario_id
+        +int center_idx
+        +int center_timestamp
+        +Dict ego_position
+        +Dict ego_velocity
+        +List~str~ labels
+        +List~Dict~ label_details
+        +int num_agents
+        +int num_vehicles
+        +int num_pedestrians
+        +float confidence_mean
+        +List~str~ categories
+        +Dict observation_data
+    }
+    
+    class ScenarioWindow {
+        +int center_idx
+        +List~ScenarioLabel~ labels
+    }
+    
+    ScenarioWindow --> LabeledScenario : export_scenario
+```
 
 ### 정의
 

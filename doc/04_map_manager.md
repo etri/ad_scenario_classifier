@@ -219,6 +219,47 @@ class PedestrianLight:
 
 ## 초기화 과정
 
+### 초기화 흐름도
+
+```mermaid
+flowchart TD
+    A[MapManager 초기화] --> B[SQLite 파일 연결]
+    B --> C[레이어 로딩]
+    C --> C1[_load_lanes]
+    C --> C2[_load_lane_connectors]
+    C --> C3[_load_roadblocks]
+    C --> C4[_load_stop_lines]
+    C --> C5[_load_crosswalks]
+    C --> C6[_load_roadlights]
+    C --> C7[_load_pedestrian_lights]
+    C --> C8[_load_lane_graph]
+    
+    C1 --> D[그래프 연결]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    C5 --> D
+    C6 --> D
+    C7 --> D
+    C8 --> D
+    
+    D --> E[_wire_graphs<br/>차선 후속/선행 관계 연결]
+    E --> F[STRtree 인덱스 구축]
+    F --> F1[차선 인덱스]
+    F --> F2[차선 연결부 인덱스]
+    F --> F3[도로 블록 인덱스]
+    F --> F4[정지선 인덱스]
+    F --> F5[횡단보도 인덱스]
+    F --> F6[신호등 인덱스]
+    
+    F1 --> G[초기화 완료]
+    F2 --> G
+    F3 --> G
+    F4 --> G
+    F5 --> G
+    F6 --> G
+```
+
 ### 1. 레이어 로딩
 
 ```python
@@ -288,6 +329,39 @@ def _wire_graphs(self) -> None:
         rb.interior_edge_objs = [self._lanes[lid] 
                                 for lid in rb.interior_edges 
                                 if lid in self._lanes]
+```
+
+## 맵 데이터 구조 관계
+
+```mermaid
+graph TD
+    A[MapManager] --> B[Lane]
+    A --> C[LaneConnector]
+    A --> D[Roadblock]
+    A --> E[StopLine]
+    A --> F[Crosswalk]
+    A --> G[RoadLight]
+    A --> H[PedestrianLight]
+    
+    B --> B1[후속 차선<br/>outgoing_edges]
+    B --> B2[선행 차선<br/>incoming_edges]
+    B --> B3[좌측 인접 차선<br/>left_link_id]
+    B --> B4[우측 인접 차선<br/>right_link_id]
+    
+    D --> D1[내부 차선<br/>interior_edges]
+    D --> D2[진입 도로 블록<br/>incoming_edges]
+    D --> D3[진출 도로 블록<br/>outgoing_edges]
+    
+    C --> C1[출발 차선<br/>from_lane_id]
+    C --> C2[도착 차선<br/>to_lane_id]
+    
+    G --> G1[차선 ID<br/>lane_id]
+    G --> G2[정지선 ID<br/>stop_line_ids]
+    
+    H --> H1[횡단보도 ID<br/>crosswalk_ids]
+    
+    B -.->|차선 그래프| B
+    D -.->|도로 블록 그래프| D
 ```
 
 ## 공간 쿼리 API

@@ -24,6 +24,83 @@ class ScenarioExporter:
         # 여러 시나리오를 일괄 출력
 ```
 
+## JSON 출력 구조
+
+### 출력 데이터 흐름
+
+```mermaid
+flowchart TD
+    A[ScenarioWindow] --> B[ScenarioExporter.export_scenario]
+    B --> C[메타데이터 추출]
+    B --> D[라벨 정보 추출]
+    B --> E[통계 정보 계산]
+    B --> F[Observation Data 생성]
+    
+    C --> C1[scenario_id]
+    C --> C2[center_idx]
+    C --> C3[center_timestamp]
+    C --> C4[ego_position]
+    C --> C5[ego_velocity]
+    
+    D --> D1[labels 리스트]
+    D --> D2[label_details 리스트]
+    
+    E --> E1[num_agents]
+    E --> E2[num_vehicles]
+    E --> E3[num_pedestrians]
+    E --> E4[confidence_mean]
+    E --> E5[categories]
+    
+    F --> F1[ego_history<br/>40 프레임]
+    F --> F2[ego_current<br/>1 프레임]
+    F --> F3[ego_future<br/>60 프레임]
+    F --> F4[agents_history]
+    F --> F5[agents_current]
+    F --> F6[agents_future]
+    F --> F7[traffic_light_status]
+    
+    C1 --> G[LabeledScenario 객체]
+    C2 --> G
+    C3 --> G
+    C4 --> G
+    C5 --> G
+    D1 --> G
+    D2 --> G
+    E1 --> G
+    E2 --> G
+    E3 --> G
+    E4 --> G
+    E5 --> G
+    
+    G --> H[JSON 딕셔너리 변환]
+    F1 --> H
+    F2 --> H
+    F3 --> H
+    F4 --> H
+    F5 --> H
+    F6 --> H
+    F7 --> H
+    
+    H --> I[JSON 파일 저장]
+    I --> J[scenario_XXXXXX.json]
+```
+
+### 배치 출력 프로세스
+
+```mermaid
+flowchart TD
+    A[List[ScenarioWindow]] --> B[ScenarioExporter.export_batch]
+    B --> C[출력 디렉토리 생성]
+    C --> D[각 윈도우 반복]
+    D --> E[export_scenario]
+    E --> F[scenario_XXXXXX.json 생성]
+    F --> G{모든 윈도우<br/>처리 완료?}
+    G -->|아니오| D
+    G -->|예| H[요약 파일 생성]
+    H --> H1[scenarios_summary.json]
+    H1 --> I[출력 완료]
+```
+
 ## JSON 출력 형식
 
 ### 기본 구조

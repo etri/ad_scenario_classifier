@@ -234,12 +234,60 @@ graph TD
 - **현재 (Current)**: 1 프레임 (인덱스 i)
 - **미래 (Future)**: 60 프레임 (인덱스 i+1 ~ i+60)
 
+```mermaid
+flowchart LR
+    subgraph History["과거 (History)"]
+        H1[i-40] --> H2[i-39] --> H3[...] --> H4[i-1]
+        H5["40 프레임<br/>2초 (20Hz)"]
+    end
+    
+    subgraph Current["현재 (Current)"]
+        C1[i]
+        C2["1 프레임<br/>0.05초"]
+    end
+    
+    subgraph Future["미래 (Future)"]
+        F1[i+1] --> F2[i+2] --> F3[...] --> F4[i+60]
+        F5["60 프레임<br/>3초 (20Hz)"]
+    end
+    
+    H4 --> C1
+    C1 --> F1
+    
+    style H5 fill:#e1f5ff
+    style C2 fill:#fff4e1
+    style F5 fill:#e1ffe1
+```
+
 ```
 타임라인:  ──────────────────────────────────────────────>
            [과거 40 프레임] [현재 1 프레임] [미래 60 프레임]
            
 프레임:    -40  -39  ...  -1   0   +1  +2  ...  +60
 인덱스:    i-40 i-39 ...  i-1  i   i+1 i+2 ...  i+60
+```
+
+### 윈도우 데이터 구조 다이어그램
+
+```mermaid
+graph TD
+    A[ScenarioWindow] --> B[center_idx: int]
+    A --> C[center_timestamp: int]
+    A --> D[Ego 데이터]
+    A --> E[Agents 데이터]
+    A --> F[기타 정보]
+    
+    D --> D1[ego_history<br/>List[EgoState]<br/>40 프레임]
+    D --> D2[ego_current<br/>EgoState<br/>1 프레임]
+    D --> D3[ego_future<br/>List[EgoState]<br/>60 프레임]
+    
+    E --> E1[agents_history<br/>List[List[TrackedObject]]<br/>40 프레임]
+    E --> E2[agents_current<br/>List[TrackedObject]<br/>1 프레임]
+    E --> E3[agents_future<br/>List[List[TrackedObject]]<br/>60 프레임]
+    
+    F --> F1[traffic_light_status<br/>TrafficLightStatusData]
+    F --> F2[map_context<br/>Dict]
+    F --> F3[labels<br/>List[ScenarioLabel]]
 ```
 
 ### 윈도우 선택 기준
