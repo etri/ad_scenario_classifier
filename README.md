@@ -67,6 +67,34 @@ ad_scenario_classifier/
 
 입력 데이터 형식 및 출력 형식에 대한 설명은 프로젝트 진행에 따라 추가 예정입니다.
 
+## 📚 문서
+
+프로젝트의 상세한 기술 문서는 [`doc/`](doc/) 디렉토리에서 확인할 수 있습니다. 각 문서는 시스템의 특정 컴포넌트나 기능에 대한 심층적인 설명을 제공합니다.
+
+### 시스템 아키텍처
+- **[01_architecture.md](doc/01_architecture.md)**: 전체 시스템 구조와 데이터 흐름을 설명합니다. 6개의 핵심 컴포넌트(JsonLogLoader, MapManager, ScenarioWindow Extraction, ScenarioLabeler, ScenarioExporter, CustomScenarioVisualizer)와 101-epoch 윈도우 개념을 다룹니다.
+
+### 데이터 구조
+- **[02_data_structures.md](doc/02_data_structures.md)**: 시스템에서 사용되는 핵심 데이터 구조를 상세히 설명합니다. ScenarioLabel, ScenarioWindow, LabeledScenario, LogEntry, TrafficLightStatusData 등의 구조와 사용 예시를 포함합니다.
+
+### 시나리오 분류기
+- **[03_scenario_labeler.md](doc/03_scenario_labeler.md)**: Rule-based 4단계 분류 파이프라인을 설명합니다. State-based, Behavior-based, Interaction-based, Dynamics-based 분류 방법과 각 라벨의 임계값, 신뢰도 레벨을 다룹니다.
+
+### 맵 관리자
+- **[04_map_manager.md](doc/04_map_manager.md)**: SQLite 기반 맵 데이터베이스 관리 시스템을 설명합니다. STRtree 기반 공간 인덱싱, 다양한 맵 레이어 지원, 공간 쿼리 API 사용법을 포함합니다.
+
+### JSON 로그 로더
+- **[05_json_loader.md](doc/05_json_loader.md)**: JSON 형식의 자율주행 로그 파일을 NuPlan 프레임워크 데이터 구조로 변환하는 과정을 설명합니다. 좌표계 변환, EgoState 및 TrackedObject 파싱 방법을 다룹니다.
+
+### 시각화 시스템
+- **[06_visualization.md](doc/06_visualization.md)**: 라벨링된 시나리오를 시각화하여 PNG 이미지로 저장하는 시스템을 설명합니다. Ego 중심 좌표계 변환, 맵 요소 및 궤적 렌더링 방법을 포함합니다.
+
+### 데이터 출력
+- **[07_export.md](doc/07_export.md)**: 라벨링된 시나리오를 JSON 형식으로 출력하는 방법을 설명합니다. JSON 출력 형식, 101-epoch 전체 관측 데이터 구조, 요약 파일 생성 방법을 다룹니다.
+
+### 처리 파이프라인
+- **[08_pipeline.md](doc/08_pipeline.md)**: 전체 처리 파이프라인의 단계별 상세 설명을 제공합니다. 초기화부터 로그 로딩, 윈도우 추출, 분류, 출력, 시각화까지의 전체 흐름과 성능 최적화 방법을 포함합니다.
+
 ## 🤝 기여 방법
 
 1. 이 저장소를 포크합니다
