@@ -16,6 +16,19 @@
 
 시나리오에 할당된 단일 라벨을 나타내는 데이터 클래스입니다.
 
+### 데이터 구조
+
+```mermaid
+classDiagram
+    class ScenarioLabel {
+        +str label
+        +float confidence
+        +str category
+        +str description
+    }
+    note for ScenarioLabel "label: low_magnitude_speed\nconfidence: 0.0~1.0\ncategory: speed_profile"
+```
+
 ### 정의
 
 ```python
@@ -214,6 +227,34 @@ labeler.classify(window)
 
 라벨링이 완료된 시나리오를 JSON으로 출력하기 위한 데이터 구조입니다.
 
+### 데이터 구조
+
+```mermaid
+classDiagram
+    class LabeledScenario {
+        +str scenario_id
+        +int center_idx
+        +int center_timestamp
+        +Dict ego_position
+        +Dict ego_velocity
+        +List~str~ labels
+        +List~Dict~ label_details
+        +int num_agents
+        +int num_vehicles
+        +int num_pedestrians
+        +float confidence_mean
+        +List~str~ categories
+        +Dict observation_data
+    }
+    
+    class ScenarioWindow {
+        +int center_idx
+        +List~ScenarioLabel~ labels
+    }
+    
+    ScenarioWindow --> LabeledScenario : export_scenario
+```
+
 ### 정의
 
 ```python
@@ -360,9 +401,9 @@ class TrafficLightStatusType(IntEnum):
 ```mermaid
 flowchart TD
     A[JSON 로그 파일] --> B[JsonLogLoader.parse_log_entry]
-    B --> C[parse_ego_state<br/>→ EgoState]
-    B --> D[parse_dynamic_agent<br/>→ TrackedObject]
-    B --> E[parse_traffic_light<br/>→ TrafficLightStatusData]
+    B --> C["parse_ego_state -> EgoState"]
+    B --> D["parse_dynamic_agent -> TrackedObject"]
+    B --> E["parse_traffic_light -> TrafficLightStatusData"]
     C --> F[LogEntry]
     D --> F
     E --> F
@@ -372,13 +413,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[List[LogEntry]] --> B[윈도우 추출]
-    B --> C[ego_history:<br/>List[EgoState]]
-    B --> D[ego_current:<br/>EgoState]
-    B --> E[ego_future:<br/>List[EgoState]]
-    B --> F[agents_history:<br/>List[List[TrackedObject]]]
-    B --> G[agents_current:<br/>List[TrackedObject]]
-    B --> H[agents_future:<br/>List[List[TrackedObject]]]
+    A["LogEntry 리스트"] --> B[윈도우 추출]
+    B --> C["ego_history: List[EgoState]"]
+    B --> D["ego_current: EgoState"]
+    B --> E["ego_future: List[EgoState]"]
+    B --> F["agents_history: List[List[TrackedObject]]"]
+    B --> G["agents_current: List[TrackedObject]"]
+    B --> H["agents_future: List[List[TrackedObject]]"]
     C --> I[ScenarioWindow]
     D --> I
     E --> I
@@ -395,8 +436,8 @@ flowchart TD
     B --> C[메타데이터 추출]
     B --> D[라벨 정보 추출]
     B --> E[통계 정보 계산]
-    B --> F[observation_data 생성<br/>101-epoch 전체 데이터]
-    C --> G[LabeledScenario<br/>JSON 출력용]
+    B --> F["observation_data 생성: 101-epoch 전체 데이터"]
+    C --> G["LabeledScenario / JSON 출력용"]
     D --> G
     E --> G
     F --> G
